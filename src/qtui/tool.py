@@ -29,7 +29,7 @@ class MainWindow(FluentWindow):
         self.setWindowTitle("MIO-KITCHEN")
 
         # 设置窗口大小
-        self.resize(900, 700)
+        self.resize(1000, 800)
 
         # 窗口居中显示
         self.center()
