@@ -18,7 +18,7 @@ class MainWindow(FluentWindow):
         super().__init__()
 
         # 设置主题
-        setTheme(Theme.DARK)
+        setTheme(Theme.AUTO)
 
         self.setWindowIcon(QIcon('icon.ico'))
         self.splashScreen = SplashScreen(self.windowIcon(), self)
@@ -58,6 +58,7 @@ class MainWindow(FluentWindow):
         # 添加导航项
         self.addSubInterface(self.home_page, FIF.HOME, '主页')
         self.addSubInterface(self.project_page, FIF.DOCUMENT, '项目')
+        # notice: merge toolbox as built-in plugin
         self.addSubInterface(self.plugin_page, FIF.APPLICATION, '插件')
         self.addSubInterface(self.about_page, FIF.INFO, '关于', NavigationItemPosition.BOTTOM)
         self.addSubInterface(self.settings_page, FIF.SETTING, '设置', NavigationItemPosition.BOTTOM)
