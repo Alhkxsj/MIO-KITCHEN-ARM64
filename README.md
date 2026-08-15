@@ -1,3 +1,18 @@
+<p align="center">
+  <samp>
+    <big><big><big>🍝 此代码由 AI 制作 · 百分百纯正 AI · 零人工 🍝</big></big></big><br>
+    <small>（可能掺杂一点人工 · maybe a little bit of human）</small><br>
+    <i>Code written by AI. Bugs retained by human.</i><br>
+    <small>5 min coding, 2h compile errors, missed a semicolon.</small>
+  </samp>
+</p>
+<p align="center">
+  <img src="https://img.shields.io/badge/AI%20Generated%2C%20Human%20Debugged-pro-764ba2?style=flat-square" />
+  <img src="https://img.shields.io/badge/spaghetti%20code-100%25-f97316?style=flat-square&logo=codechef&logoColor=white" />
+  <img src="https://img.shields.io/badge/it%20works%20on%20my%20machine-green?style=flat-square" />
+  <img src="https://img.shields.io/badge/bugs-%E2%88%9E-red?style=flat-square" />
+</p>
+
 # MIO-KITCHEN-ARM64 #
 > [!CAUTION]
 > # [Your phone is about to stop being yours. ](https://keepandroidopen.org/)
