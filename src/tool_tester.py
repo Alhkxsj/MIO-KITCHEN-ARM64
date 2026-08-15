@@ -47,11 +47,9 @@ class Test(unittest.TestCase):
             __import__(i)
 
     def test_binaries(self):
-        file_list = ['brotli', 'busybox', 'dtc', 'e2fsdroid', 'extract.erofs', 'extract.f2fs', 'img2simg',
-                     'lpmake', 'magiskboot', 'make_ext4fs', 'mke2fs', 'mkfs.erofs', 'mkfs.f2fs', 'sload.f2fs', 'zstd']
-        if platform.machine() != 'x86_64' or platform.system() != 'Linux':
-            file_list.remove('mkfs.f2fs')
-            file_list.remove('extract.f2fs')
+        file_list = ['brotli', 'busybox', 'cpio', 'delta_generator', 'dtc', 'e2fsdroid', 'extract.erofs',
+                     'img2simg', 'imgkit', 'lpmake', 'magiskboot', 'make_ext4fs', 'mke2fs', 'mkfs.erofs',
+                     'mkfs.f2fs', 'simg2img', 'sload.f2fs', 'zstd']
         if os.name == 'nt':
             file_list = [i + '.exe' for i in file_list]
             file_list.append('cygwin1.dll')

@@ -1,22 +1,21 @@
+# MIO-KITCHEN-ARM64 运行/构建依赖
+# 注意: 大部分包发行版自带 (如 Debian/Ubuntu 的 python3-pil 等),
+# 用户可用系统包管理器安装, 仅以下必须 pip 安装:
+sv_ttk
+chlorophyll
+protobuf>7
+future
+# 以下可 pip 也可发行版包管理器安装 (Debian/Ubuntu 包名见 docs/BUILD.md):
 Pillow>=10.0.1
 pycryptodome>=3.19.1
 Requests>2.31.0
-protobuf>7
-sv_ttk
-pyinstaller
-chlorophyll
-future>=1.0.0
-pip>=25.3
 Pygments
 zstandard
 asn1crypto
 lxml
-wmi; sys_platform == 'win32'
 six
 httpx
 cryptography>=46.0.5
 toml
 lz4
-python-lzo; sys_platform == 'linux'
-configparser
-datetime
+python-lzo

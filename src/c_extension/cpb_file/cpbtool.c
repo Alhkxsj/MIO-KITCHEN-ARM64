@@ -3,7 +3,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef _WIN32
 #include <direct.h>
+#else
+#include <sys/stat.h>
+#include <stdint.h>
+typedef int64_t int64 ;
+typedef uint64_t uint64 ;
+#define _mkdir(p) mkdir(p, 0755)
+#endif
 #include <stddef.h>
  
 typedef char int8 ;
@@ -12,8 +20,6 @@ typedef short int16 ;
 typedef unsigned short uint16 ;
 typedef int int32 ;
 typedef unsigned int uint32 ;
-typedef __int64 int64 ;
-typedef unsigned __int64 uint64 ;
  
 typedef struct tagCPBHEADER
 {
@@ -128,13 +134,13 @@ int32 MkdirRecursive( char* path )
 			*p = 0;
 			if( access( path, 0 ) != 0 )
 			{
-				if( mkdir( path ) != 0 )
+				if( _mkdir( path ) != 0 )
 					return -1;
 			}
 			*p = ch ;
 		}
 	}
-	return mkdir( path );
+	return _mkdir( path );
 }
  
 void usage(void)
@@ -177,7 +183,7 @@ void CreateListFile(const char *lpszCpb, const char *lpszList)
 	if (fcpb == NULL)
 	{
 		printf("open “%s” failed!\n", lpszCpb) ;
-		return 0 ;
+		return;
 	}
 	sz = fread(&cpbHdr, sizeof(cpbHdr), 1, fcpb);
 	if(sz != 1 || cpbHdr.cp_magic[0] != 'C' || cpbHdr.cp_magic[1] != 'P' ||
@@ -185,7 +191,7 @@ void CreateListFile(const char *lpszCpb, const char *lpszList)
 	{
 		fclose(fcpb) ;
 		printf("invalid cpb!\n") ;
-		return 0;
+		return;
 	}
 	if(cpbHdr.cp_version[0] != 0x01 || cpbHdr.cp_version[1] != 0x07)
 	{
@@ -200,7 +206,7 @@ void CreateListFile(const char *lpszCpb, const char *lpszList)
 	{
 		fclose(fcpb) ;
 		printf("malloc %u failed,invalid file!\n", nImgSize) ;
-		return 0 ;
+		return;
 	}
 	sz = fread(pImgHdr, nImgSize, 1, fcpb) ;
 	if(sz != 1)
@@ -208,7 +214,7 @@ void CreateListFile(const char *lpszCpb, const char *lpszList)
 		free(pImgHdr) ;
 		fclose(fcpb) ;
 		printf("invalid cpb!\n") ;
-		return 0 ;
+		return;
 	}
 	flst = fopen(lpszList, "w") ;
 	if(flst != NULL)
@@ -222,7 +228,7 @@ void CreateListFile(const char *lpszCpb, const char *lpszList)
 		printf("list file '%s'Generate failed!\n", lpszList) ;
 	free(pImgHdr) ;
 	fclose(fcpb) ;
-	return 0 ;
+	return;
 }
  
 void PrintfImageHeader(LPIMAGEHEADER pImgHdr)
@@ -451,7 +457,7 @@ uint32 WriteImageHeaders(FILE *fcpb, LPIMAGEHEADER pImgHdrs, int32 nCount, uint3
 	{
 		uiOffset = pImgHdrs[i].imageOffset ;
 		uiSize = pImgHdrs[i].imageSize ;
-		uiCrc = CRC16(&pImgHdrs[i], sizeof(IMAGEHEADER), uiCrc) ;
+		uiCrc = CRC16((uint8 *)&pImgHdrs[i], sizeof(IMAGEHEADER), uiCrc) ;
 		ImageHeaderCorrectPosSize(&pImgHdrs[i], i, uiCorrect) ;
 		fwrite(&pImgHdrs[i], sizeof(IMAGEHEADER), 1, fcpb) ;
 		pImgHdrs[i].imageOffset = uiOffset ;

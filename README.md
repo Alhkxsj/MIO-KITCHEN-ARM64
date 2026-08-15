@@ -1,4 +1,4 @@
-# MIO-KITCHEN-SOURCE #
+# MIO-KITCHEN-ARM64 #
 > [!CAUTION]
 > # [Your phone is about to stop being yours. ](https://keepandroidopen.org/)
 
@@ -9,10 +9,14 @@
 > Unauthorized commercial use prohibited
 ***
 
-## Linux-LoongArch64 Supported!
-![Banner](https://github.com/ColdWindScholar/MIO-KITCHEN-SOURCE/blob/main/splash_loongarch.png?raw=true)
+## Linux ARM64 Only!
 > [!IMPORTANT]
-> Currently most of binaries are ported to Loongarch64 except **MagiskBoot** and **delta_generator** so related feature won't work
+> This is a fork of [MIO-KITCHEN-SOURCE](https://github.com/ColdWindScholar/MIO-KITCHEN-SOURCE)
+> dedicated to **Linux ARM64 (aarch64)** only. We only maintain this platform.
+> The full aarch64 toolchain is included: boot / super / ext4 / erofs / f2fs / payload
+> unpack & repack all work out of the box.
+> Binary toolchain status: 19 native tools, including **MagiskBoot**, **delta_generator**,
+> **mkfs.f2fs** / **sload.f2fs** / **cpio** / **simg2img** (complete vs upstream aarch64).
 
 ***
 <details><summary><h2>Used Projects</h2></summary>
@@ -136,7 +140,11 @@ pip install -r requirements.txt
 ```` shell
 python3 -m pip install -U --force-reinstall pip
 pip install -r requirements.txt
-sudo apt update -y && sudo apt install python3-tk -y
+sudo apt update -y && sudo apt install -y python3-tk cpio f2fs-tools \
+    python3-pil python3-pycryptodome python3-requests python3-pygments \
+    python3-zstandard python3-asn1crypto python3-lxml python3-six python3-httpx \
+    python3-cryptography python3-toml python3-lz4 python3-lzo python3-protobuf
+pip install -r requirements.txt
 ````
 
 If using NixOS
