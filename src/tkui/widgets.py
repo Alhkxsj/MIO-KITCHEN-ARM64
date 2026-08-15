@@ -111,8 +111,8 @@ class ListBox(Frame):
                 self.selected.remove(value)
         self.var.set(True if all(i.get() for i in self.vars) else False)
 
-    def insert(self, text: str = '', value: str = '', state=False):
-        if value in self.loaded_value:
+    def insert(self, text: str = '', value: str = '', state=False, allow_same:bool=False):
+        if value in self.loaded_value and not allow_same:
             return
         self.loaded_value.append(value)
         var = BooleanVar(value=state)
