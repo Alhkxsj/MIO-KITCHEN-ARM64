@@ -18,7 +18,7 @@ from tkinter.ttk import Frame, Scrollbar, Checkbutton, Separator
 from src.core.utils import lang
 
 
-def input_(title: str = None, text: str = "", master: Tk | Toplevel | tkinter.Frame | None = None) -> str:
+def input_(title: str | None = None, text: str = "", master: Tk | Toplevel | tkinter.Frame | None = None) -> str:
     if not master:
         master = Toplevel()
     if not title:
