@@ -11,7 +11,7 @@
 > [!CAUTION]
 > # [Your phone is about to stop being yours. ](https://keepandroidopen.org/)
 
-![Banner](https://github.com/ColdWindScholar/MIO-KITCHEN-SOURCE/blob/main/splash.png?raw=true)
+![Banner](https://raw.githubusercontent.com/Alhkxsj/MIO-KITCHEN-ARM64/main/splash.png)
 #### A Rom Tool Written in Python
 ##### The Best Free And Open Source Rom Tool For You
 > [!CAUTION]
@@ -22,9 +22,12 @@
 > [!IMPORTANT]
 > This is a fork of [MIO-KITCHEN-SOURCE](https://github.com/ColdWindScholar/MIO-KITCHEN-SOURCE)
 > dedicated to **Linux ARM64 (aarch64)** only. We only maintain this platform.
+> **Windows / macOS / x86_64 / loongarch64 are NOT supported here.**
+> Use the [upstream](https://github.com/ColdWindScholar/MIO-KITCHEN-SOURCE) for those platforms.
+>
 > The full aarch64 toolchain is included: boot / super / ext4 / erofs / f2fs / payload
 > unpack & repack all work out of the box.
-> Binary toolchain status: 19 native tools, including **MagiskBoot**, **delta_generator**,
+> 19 native tools, including **MagiskBoot**, **delta_generator**,
 > **mkfs.f2fs** / **sload.f2fs** / **cpio** / **simg2img** (complete vs upstream aarch64).
 
 ***
@@ -63,9 +66,7 @@
 </details>
 
 ***
-## Localization
-### [日本語](https://github.com/ColdWindScholar/MIO-KITCHEN-SOURCE/blob/main/readmes/README_ja-JP.md) | [中文](https://github.com/ColdWindScholar/MIO-KITCHEN-SOURCE/blob/main/readmes/README_zh-CN.md) | [Português brasileiro](https://github.com/ColdWindScholar/MIO-KITCHEN-SOURCE/blob/main/readmes/README_pt-BR.md) | [Deutsch](https://github.com/ColdWindScholar/MIO-KITCHEN-SOURCE/blob/main/readmes/README_de-DE.md) | [Русский язык](https://github.com/ColdWindScholar/MIO-KITCHEN-SOURCE/blob/main/readmes/README_ru-RU.md) | [Indonesian](https://github.com/ColdWindScholar/MIO-KITCHEN-SOURCE/blob/main/readmes/README_id-ID.md) | [Tiếng Việt](https://github.com/ColdWindScholar/MIO-KITCHEN-SOURCE/blob/main/readmes/README_vi-VN.md)
-***
+
 ## Features
 * Unpack `boot, dtbo, ext4, erofs, payload, logo` and so on
 * Pack `boot, dtbo, ext4, erofs, logo` and so on
@@ -81,11 +82,9 @@
 ***
 ## Supported Os
 
-|   Os    | Arch                             |
-|:-------:|----------------------------------|
-|  Linux  | x86_64 arm64 loongarch64         |
-| Windows | x86_64 x86 amd64 arm64(by sewzj) |
-|  Macos  | Arm64  X86                       |
+|   Os    | Arch    |
+|:-------:|---------|
+|  Linux  | arm64   |
 ## Supported Image Types
 | Supported Image Types     |
 |---------------------------|
@@ -134,16 +133,6 @@ python3 config chksupd
 > [!NOTE]
 > Currently Only Support Python 3.8 and Newer!
 ### Prerequisites
-<details><summary>macOS</summary>
-
-```` shell
-brew install python3-tk python3  tcl-tk
-python3 -m pip install -U --force-reinstall pip
-pip install -r requirements.txt
-````
-
-</details>
-
 <details><summary>Linux</summary>
 
 ```` shell
@@ -160,15 +149,6 @@ If using NixOS
 
 ```` shell
 nix-shell
-````
-
-</details>
-
-<details><summary>Windows</summary>
-
-```` shell
-python -m pip install -U --force-reinstall pip
-pip install -r requirements.txt
 ````
 
 </details>

@@ -1,7 +1,6 @@
-name: "Build Tool"
+name: "Build Tool (ARM64)"
 permissions:
   contents: write
-  discussions: write
 on:
   push:
     paths:
@@ -9,24 +8,23 @@ on:
   workflow_dispatch:
 jobs:
   build:
-    needs: [build-win,build-linux,build-macos]
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.12.6"]
+    runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          # Semantic version range syntax or exact version of a Python version
-          python-version: '3.10'
-          # Optional - x64 or x86 architecture, defaults to x64
+          python-version: "3.10"
       - name: Install Packages
         run: |
           python3 -m pip install -U --force-reinstall pip
-          sudo apt update -y && sudo apt install python3-tk git -y
+          sudo apt update -y && sudo apt install -y python3-tk cpio f2fs-tools \
+            python3-pil python3-pycryptodome python3-requests python3-pygments \
+            python3-zstandard python3-asn1crypto python3-lxml python3-six python3-httpx \
+            python3-cryptography python3-toml python3-lz4 python3-lzo python3-protobuf
+          pip install -r requirements.txt
+      - name: Build
+        run: python3 build.py
       - name: Generate Release Content
         run: |
           python3 build.py grb
@@ -41,78 +39,3 @@ jobs:
           tag: "CI_BUILD_${{ github.run_number }}"
           bodyFile: "body.md"
           artifacts: "*.zip"
-
-  build-win:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python 3.12.6
-        uses: actions/setup-python@v5
-        with:
-          # Semantic version range syntax or exact version of a Python version
-          python-version: '3.12.6'
-          # Optional - x64 or x86 architecture, defaults to x64
-          architecture: 'x86'
-      # You can test your matrix by printing the current Python version
-      - name: Update pip
-        run:  python -m pip install -U --force-reinstall pip
-      - name: Pack tool
-        run: python build.py
-      - name: Upload Win Build
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: MIO-KITCHEN-win
-          path: './MIO-KITCHEN-win.zip'
-  build-linux:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          # Semantic version range syntax or exact version of a Python version
-          python-version: '3.10'
-          # Optional - x64 or x86 architecture, defaults to x64
-      - name: Install Packages
-        run: |
-            python3 -m pip install -U --force-reinstall pip
-            sudo apt update -y && sudo apt install python3-tk -y
-      - name: Pack Tool
-        run: python3 build.py
-      - name: Upload Linux Build
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: MIO-KITCHEN-linux
-          path: './MIO-KITCHEN-linux.zip'
-  build-macos:
-    strategy:
-      matrix:
-        os: [macos-latest, macos-15-intel]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          # Semantic version range syntax or exact version of a Python version
-          python-version: '3.12'
-          # Optional - x64 or x86 architecture, defaults to x64
-      - name: Install Packages
-        run: |
-          python3 -m pip install -U --force-reinstall pip
-      - name: Pack Tool
-        run: python3 build.py
-      - name: Upload Arm64 Macos Build
-        if: success() && matrix.os == 'macos-latest'
-        uses: actions/upload-artifact@v4
-        with:
-          name: MIO-KITCHEN-macos
-          path: './MIO-KITCHEN-macos.zip'
-      - name: Upload x86_64 Macos Build
-        if: success() && matrix.os == 'macos-15-intel'
-        uses: actions/upload-artifact@v4
-        with:
-          name: MIO-KITCHEN-macos-intel
-          path: './MIO-KITCHEN-macos-intel.zip'

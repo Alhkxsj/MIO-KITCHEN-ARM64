@@ -31,15 +31,9 @@ class Builder:
             from tkinter import END
         except:
             raise FileNotFoundError("Tkinter is not exist!\nThe dist may not Work!")
-        if ostype == 'Linux':
-            name = 'MIO-KITCHEN-linux.zip'
-        elif ostype == 'Darwin':
-            if platform.machine() == 'x86_64':
-                name = 'MIO-KITCHEN-macos-intel.zip'
-            else:
-                name = 'MIO-KITCHEN-macos.zip'
-        else:
-            name = 'MIO-KITCHEN-win.zip'
+        if ostype != 'Linux' or platform.machine() != 'aarch64':
+            raise SystemExit("ARM64-only build: please run on Linux aarch64")
+        name = 'MIO-KITCHEN-linux-arm64.zip'
         self.name = name
         self.local = os.getcwd()
         self.ostype = ostype
@@ -81,11 +75,8 @@ class Builder:
         with open('bin/setting.ini', 'r', encoding='utf-8') as f:
             ver = [line for line in f.readlines() if 'version' in line]
             ver = ver[0].strip().split(' = ')[1]
-        for i in ['MIO-KITCHEN-win', 'MIO-KITCHEN-linux', 'MIO-KITCHEN-macos', 'MIO-KITCHEN-macos-intel']:
-            name_list = i.rsplit('-')
-            name_list.insert(2, ver)
-            name = '-'.join(name_list)
-            os.rename(f'{i}/{i}.zip', f'{name}.zip')
+        os.rename('MIO-KITCHEN-linux/MIO-KITCHEN-linux.zip',
+                  f'MIO-KITCHEN-linux-{ver}-arm64.zip')
         # write ver to github env
         with open(os.getenv('GITHUB_ENV'), 'a', encoding='utf-8') as f:
             f.write(f'ver={ver}\n')
@@ -107,82 +98,31 @@ class Builder:
 
     def pyinstaller_build(self):
         import PyInstaller.__main__
-        dndplat = self.dndplat
-        if self.ostype == 'Darwin':
-            if platform.machine() == 'x86_64':
-                dndplat = 'osx-x64'
-            elif platform.machine() == 'arm64':
-                dndplat = 'osx-arm64'
-            PyInstaller.__main__.run([
-                'tool.py',
-                '-Fw',
-                '--exclude-module',
-                'numpy',
-                '-i',
-                'icon.ico',
-                '--collect-data',
-                'sv_ttk',
-                '--collect-data',
-                'chlorophyll',
-                '--hidden-import',
-                'tkinter',
-                '--hidden-import',
-                'PIL',
-                '--hidden-import',
-                'PIL._tkinter_finder'
-            ])
-        elif os.name == 'posix':
-            if self.ostype == 'Linux':
-                if platform.machine() == 'x86_64':
-                    dndplat = 'linux-x64'
-                elif platform.machine() == 'aarch64':
-                    dndplat = 'linux-arm64'
-                elif platform.machine() == 'loongarch64':
-                    dndplat = 'linux-loongarch64'
-            PyInstaller.__main__.run([
-                'tool.py',
-                '-Fw',
-                '--exclude-module',
-                'numpy',
-                '-i',
-                'icon.ico',
-                '--collect-data',
-                'sv_ttk',
-                '--collect-data',
-                'chlorophyll',
-                '--hidden-import',
-                'tkinter',
-                '--hidden-import',
-                'PIL',
-                '--hidden-import',
-                'PIL._tkinter_finder',
-                '--splash',
-                'splash_loongarch.png' if platform.machine() == 'loongarch64' else 'splash.png'
-            ])
-        elif os.name == 'nt':
-            mach_ = platform.machine()
-            platform.machine = lambda: 'x86' if platform.architecture()[0] == '32bit' and mach_ == 'AMD64' else mach_
-            if platform.machine() == 'x86':
-                dndplat = 'win-x86'
-            elif platform.machine() == 'AMD64':
-                dndplat = 'win-x64'
-            elif platform.machine() == 'ARM64':
-                dndplat = 'win-arm64'
-            PyInstaller.__main__.run([
-                'tool.py',
-                '-Fw',
-                '--exclude-module',
-                'numpy',
-                '-i',
-                'icon.ico',
-                '--collect-data',
-                'sv_ttk',
-                '--collect-data',
-                'chlorophyll',
-                '--splash',
-                'splash.png'
-            ])
-        self.dndplat = dndplat
+        if os.name != 'posix':
+            print("ARM64-only build: please run on Linux aarch64")
+            return
+        if self.ostype != 'Linux' or platform.machine() != 'aarch64':
+            print("ARM64-only build: please run on Linux aarch64")
+            return
+        PyInstaller.__main__.run([
+            'tool.py',
+            '-Fw',
+            '--exclude-module',
+            'numpy',
+            '--collect-data',
+            'sv_ttk',
+            '--collect-data',
+            'chlorophyll',
+            '--hidden-import',
+            'tkinter',
+            '--hidden-import',
+            'PIL',
+            '--hidden-import',
+            'PIL._tkinter_finder',
+            '--splash',
+            'splash.png'
+        ])
+        return
 
     def config_folder(self):
         if not os.path.exists('dist/bin'):
