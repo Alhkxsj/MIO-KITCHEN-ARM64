@@ -22,7 +22,7 @@ cat > "$PKG/usr/bin/mio-kitchen" <<SH
 #!/bin/bash
 cd /opt/mio-kitchen
 python3 -c "import sv_ttk, chlorophyll, future" 2>/dev/null || \
-    python3 -m pip install --break-system-packages --quiet sv-ttk chlorophyll future "protobuf>=7" 2>/dev/null
+    python3 -m pip install --break-system-packages --quiet pycryptodome Pillow requests pygments zstandard asn1crypto lxml six httpx cryptography toml lz4 python-lzo "protobuf>=7" sv-ttk chlorophyll future 2>/dev/null
 [ -n "\$DISPLAY" ] || { echo "[错误] 需要 X11 或 Wayland+XWayland 图形环境 (DISPLAY 为空)"; exit 1; }
 exec python3 tool.py
 SH
@@ -62,7 +62,9 @@ cat > "$PKG/DEBIAN/postinst" <<POST
 #!/bin/bash
 set -e
 python3 -m pip install --break-system-packages --quiet \
-    sv-ttk chlorophyll future "protobuf>=7" 2>/dev/null || true
+    pycryptodome Pillow requests pygments zstandard asn1crypto lxml six \
+    httpx cryptography toml lz4 python-lzo "protobuf>=7" \
+    sv-ttk chlorophyll future 2>/dev/null || true
 chmod -R a+rX /opt/mio-kitchen 2>/dev/null || true
 exit 0
 POST
