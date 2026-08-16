@@ -7532,9 +7532,16 @@ class UnpackGui(ttk.LabelFrame):
             win.message_pop(lang.warn1)
             return False
         parts_dict = JsonEdit(f"{work}/config/parts_info").read()
+        # List every unpacked directory. parts_info keys may be the image
+        # file name (e.g. a renamed GSI "system-td-arm64-ab-vanilla") while
+        # the unpacked folder is the mount point (e.g. "system"); requiring
+        # an exact key match would leave the pack list empty. Fall back to
+        # 'unknown' and let packrom's per-type dispatch handle it.
         for folder in os.listdir(work):
-            if os.path.isdir(work + folder) and folder in parts_dict.keys():
-                self.lsg.insert(f"{folder} [{parts_dict.get(folder, 'Unknown')}]", folder)
+            if not os.path.isdir(work + folder) or folder == 'config':
+                continue
+            ftype = parts_dict.get(folder, parts_dict.get(os.path.splitext(folder)[0], 'unknown'))
+            self.lsg.insert(f"{folder} [{ftype}]", folder)
         return True
 
     def close_(self):
