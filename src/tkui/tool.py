@@ -5628,24 +5628,27 @@ class StdoutRedirector:
         # worker threads deadlocks the Tcl interpreter (loading
         # spinner spins forever, unpack never finishes).
         try:
-            self._q.put(string)
+            self._q.put((string, settings.language))
         except Exception:
             pass
         create_thread(logging.debug, string)
-        if settings.ai_engine == '1':
-            AI_engine.suggest(string, language=settings.language, ok=lang.ok)
 
     def _poll(self):
         try:
             while True:
                 try:
-                    string = self._q.get_nowait()
+                    string, language = self._q.get_nowait()
                 except queue.Empty:
                     break
                 try:
                     self.text_space.insert(tk.END, string)
                 except (TclError, RuntimeError):
                     pass
+                if settings.ai_engine == '1':
+                    try:
+                        AI_engine.suggest(string, language=language, ok=lang.ok)
+                    except Exception:
+                        pass
         except Exception:
             pass
         try:
