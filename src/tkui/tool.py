@@ -67,6 +67,7 @@ import sys
 import time
 from platform import machine
 from webbrowser import open as openurl
+import queue
 import tkinter as tk
 from tkinter import ttk
 from timeit import default_timer as dti
@@ -293,6 +294,16 @@ class LoadAnim:
                 return lambda *a, **k: print(
                     f"Error: Task number {task_num} is being used by {task_real} for {info[0]}.")
             self.tasks[task_num] = info
+            # Keep pumping the Tk event loop while the worker runs.
+            # Worker threads call Tk widgets (log textbox, StringVar,
+            # combobox); without this the Tcl lock is never released and
+            # the unpack/repack deadlocks with the spinner spinning.
+            while not task_real.done():
+                try:
+                    win.update()
+                except (TclError, RuntimeError):
+                    break
+                time.sleep(0.01)
             return_value = task_real.result()
             if task_num in self.tasks:
                 del self.tasks[task_num]
@@ -5600,9 +5611,11 @@ class StdoutRedirector:
         self.error = error_
         self.error_info = ''
         self.w = 0
+        self._q = queue.Queue()
         self.flush = lambda: error(1, self.error_info) if self.error_info else ...
         win.loops.append(self.loop)
         win.loops.append(self.loop2)
+        win.after(50, self._poll)
 
     def write(self, string):
         self.w = 1
@@ -5610,29 +5623,56 @@ class StdoutRedirector:
             self.error_info += string
             logging.error(string)
             return
-        self.text_space.insert(tk.END, string)
+        # Thread-safe: worker threads only enqueue; the main thread
+        # drains the queue via win.after. Directly touching Tk from
+        # worker threads deadlocks the Tcl interpreter (loading
+        # spinner spins forever, unpack never finishes).
+        try:
+            self._q.put(string)
+        except Exception:
+            pass
         create_thread(logging.debug, string)
         if settings.ai_engine == '1':
             AI_engine.suggest(string, language=settings.language, ok=lang.ok)
 
+    def _poll(self):
+        try:
+            while True:
+                try:
+                    string = self._q.get_nowait()
+                except queue.Empty:
+                    break
+                try:
+                    self.text_space.insert(tk.END, string)
+                except (TclError, RuntimeError):
+                    pass
+        except Exception:
+            pass
+        try:
+            win.after(50, self._poll)
+        except (TclError, RuntimeError):
+            pass
+
     def loop(self):
-        while True:
-            if self.w:
-                self.text_space.see('end')
-            time.sleep(0.01)
+        def _tick():
+            try:
+                if self.w:
+                    self.text_space.see('end')
+            except (TclError, RuntimeError):
+                pass
+            win.after(10, _tick)
+        win.after(10, _tick)
 
     def loop2(self):
-        i = 0
-        line_first = None
-        while True:
-            if not line_first:
+        def _tick():
+            try:
                 line_first = self.text_space.get("end-1c linestart", "end-1c")
-            if line_first == self.text_space.get("end-1c linestart", "end-1c"):
-                i %= i + 1
-            line_first = None
-            if not i:
-                self.w = 0
-            time.sleep(0.5)
+                if line_first == self.text_space.get("end-1c linestart", "end-1c"):
+                    self.w = 0
+            except (TclError, RuntimeError):
+                pass
+            win.after(500, _tick)
+        win.after(500, _tick)
 
 
 def download_api(url, path=None, int_=True, size_: int = 0, chunk_size: int = 2048576):
